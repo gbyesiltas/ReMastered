@@ -16,7 +16,9 @@ public:
     void resized() override;
 
     //==============================================================================
-    AudioVisualiserComponent* audioVisualizer;
+    AudioVisualiserComponent* audioVisualiser;
+    juce::MidiKeyboardState keyboardState;
+    MidiKeyboardComponent* midiKeyboardComponent = new MidiKeyboardComponent(keyboardState,juce::MidiKeyboardComponent::horizontalKeyboard);
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReMasteredAudioProcessorEditor)

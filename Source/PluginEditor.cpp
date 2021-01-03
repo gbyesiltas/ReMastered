@@ -7,16 +7,19 @@ ReMasteredAudioProcessorEditor::ReMasteredAudioProcessorEditor (ReMasteredAudioP
 {
     setSize(500, 300);
     setOpaque(true);
-    this->audioVisualizer = p.getAudioVisualiserComponent();
-    this->audioVisualizer->setBounds(0,0,500, 300);
-    this->audioVisualizer->setColours(Colours::black,Colours::violet);
-    this->audioVisualizer->setRepaintRate(30);
+    this->audioVisualiser = p.getAudioVisualiserComponent();
+    this->audioVisualiser->setBounds(0,0,500, 250);
+    this->audioVisualiser->setColours(Colours::black,Colours::violet);
+    this->audioVisualiser->setRepaintRate(30);
     
-    addAndMakeVisible(this->audioVisualizer);
+    this->midiKeyboardComponent->setBounds(0, 250, 500, 50);
+    addAndMakeVisible(this->audioVisualiser);
+    addAndMakeVisible(this->midiKeyboardComponent);
 }
 
 ReMasteredAudioProcessorEditor::~ReMasteredAudioProcessorEditor()
 {
+    this->midiKeyboardComponent->~MidiKeyboardComponent();
 }
 
 //==============================================================================

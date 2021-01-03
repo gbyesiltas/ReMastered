@@ -20,6 +20,9 @@ ReMasteredAudioProcessor::ReMasteredAudioProcessor()
                                          this->windowSize,
                                          this->windowSize,
                                          this->sampleRate);
+    
+    audioVisualiser->setBufferSize(128);
+    audioVisualiser->setSamplesPerBlock(16);
 }
 
 ReMasteredAudioProcessor::~ReMasteredAudioProcessor()
@@ -28,11 +31,12 @@ ReMasteredAudioProcessor::~ReMasteredAudioProcessor()
     del_aubio_pitch(aubioPitchDetector);
     del_fvec(aubioInput);
     del_fvec(aubioResult);
+    audioVisualiser->clear();
+    audioVisualiser->~AudioVisualiserComponent();
     for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
         st_buf[i].clear();
     }
-    audioVisualiser->clear();
-    audioVisualiser->~AudioVisualiserComponent();
+    
 }
 
 //==============================================================================
@@ -101,7 +105,6 @@ void ReMasteredAudioProcessor::changeProgramName (int index, const juce::String&
 void ReMasteredAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     clearStProcessors(false);
-    
     st_buf.resize(ST_PROCESSOR_NUMBER);
     for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
         st_buf[i].clear();
@@ -113,10 +116,7 @@ void ReMasteredAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
         }
         this->sampleRate = sampleRate;
     }
-    
-    audioVisualiser->setBufferSize(128);
-    audioVisualiser->setSamplesPerBlock(16);
-    audioVisualiser->clear(); //clear the buffer
+    aubioInput->length = samplesPerBlock;
 }
 
 void ReMasteredAudioProcessor::releaseResources()
@@ -156,7 +156,6 @@ void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     
     int time;
     MidiMessage m;
-    
 
     for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
     {
@@ -173,7 +172,8 @@ void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
         }
         else if (m.isNoteOff())
         {
-            freeStProcessor(findStProcessorPlaying(MidiMessage::getMidiNoteInHertz(m.getNoteNumber())));
+            int stProcessorIndex = findStProcessorPlaying(MidiMessage::getMidiNoteInHertz(m.getNoteNumber()));
+            freeStProcessor(stProcessorIndex);
         }
     }
 
@@ -191,6 +191,7 @@ void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             if((currentDetectedFrequency==-1) || (currentDetectedFrequency!=-1 && detectedFrequency<=currentDetectedFrequency*3)){
                 softwareCounter=0;
                 singerOnHold=false;
+                audioVisualiser->setRepaintRate(30);
                 currentDetectedFrequency=detectedFrequency;
                 for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
                     if (!stProcessorActive[i]) continue;
@@ -202,6 +203,8 @@ void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
         
         if(softwareCounter>=2 && !singerOnHold){
             singerOnHold=true;
+            audioVisualiser->clear();
+            audioVisualiser->setRepaintRate(10);
             for (int processorIndex = 0; processorIndex < ST_PROCESSOR_NUMBER; processorIndex++) {
                 if (!stProcessorActive[processorIndex])continue;
                 stProcessors[processorIndex]->clear();
@@ -211,6 +214,7 @@ void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     }
 
     if(!singerOnHold){
+        
         for (int processorIndex = 0; processorIndex < ST_PROCESSOR_NUMBER; processorIndex++) {
             if (!stProcessorActive[processorIndex])continue;
             stProcessors[processorIndex]->putSamples(read_buf.data(), numSamples);  //inputting the data to the processor
@@ -226,9 +230,6 @@ void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             }
         }
         audioVisualiser->pushBuffer(buffer);
-    }
-    else{
-        audioVisualiser->clear();
     }
 }
 
