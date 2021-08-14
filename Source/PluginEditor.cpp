@@ -13,6 +13,7 @@ ReMasteredAudioProcessorEditor::ReMasteredAudioProcessorEditor (ReMasteredAudioP
     this->audioVisualiser->setRepaintRate(30);
     
     this->midiKeyboardComponent->setBounds(0, 250, 500, 50);
+    //TODO: Make this keyboard component actually interactive
     addAndMakeVisible(this->audioVisualiser);
     addAndMakeVisible(this->midiKeyboardComponent);
 }
