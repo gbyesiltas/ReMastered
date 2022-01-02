@@ -16,11 +16,6 @@ ReMasteredAudioProcessor::ReMasteredAudioProcessor()
 #endif
 {
     initSoundTouch();
-    aubioPitchDetector = new_aubio_pitch("default",
-                                         this->windowSize,
-                                         this->windowSize,
-                                         this->sampleRate);
-    
     audioVisualiser->setBufferSize(128);
     audioVisualiser->setSamplesPerBlock(16);
 }
@@ -104,6 +99,11 @@ void ReMasteredAudioProcessor::changeProgramName (int index, const juce::String&
 //==============================================================================
 void ReMasteredAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    if(this->aubioPitchDetector != nullptr) del_aubio_pitch(aubioPitchDetector);
+    aubioPitchDetector = new_aubio_pitch("default",
+                                         this->pitchDetectionWindowSize,
+                                         samplesPerBlock,
+                                         this->sampleRate);
     clearStProcessors(false);
     st_buf.resize(ST_PROCESSOR_NUMBER);
     for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
@@ -116,7 +116,6 @@ void ReMasteredAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
         }
         this->sampleRate = sampleRate;
     }
-    aubioInput->length = samplesPerBlock;
 }
 
 void ReMasteredAudioProcessor::releaseResources()
@@ -151,52 +150,35 @@ bool ReMasteredAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    float* bufferStart = buffer.getWritePointer(0);
+    const float* bufferStart = buffer.getReadPointer(0);
     int numSamples = buffer.getNumSamples();
     
     int time;
     MidiMessage m;
-
+    
     for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
     {
         if (currentDetectedFrequency == 0) break;
-        if (m.isNoteOn())
-        {
-            int firstFreeSt = getFirstFreeSt();
-            if (firstFreeSt != -1) {
-                autoTuneFreqST(MidiMessage::getMidiNoteInHertz(m.getNoteNumber()), currentDetectedFrequency, firstFreeSt);
-                stProcessorActive[firstFreeSt] = true;
-                stProcessorVolume[firstFreeSt] = m.getFloatVelocity();
-                stProcessorPlaying[firstFreeSt] = MidiMessage::getMidiNoteInHertz(m.getNoteNumber());
-            }
-        }
-        else if (m.isNoteOff())
-        {
-            int stProcessorIndex = findStProcessorPlaying(MidiMessage::getMidiNoteInHertz(m.getNoteNumber()));
-            freeStProcessor(stProcessorIndex);
-        }
+        handleMidiMessage(m);
     }
 
     std::vector<float> read_buf(bufferStart,bufferStart+numSamples);
     for (int i = 0; i < numSamples; ++i) {
         fvec_set_sample(this->aubioInput,buffer.getSample(0,i),(aubioIndex*numSamples)+i);
     }
-    
     aubioIndex = aubioIndex+1;
-    if(aubioIndex == (windowSize/numSamples)){
-        aubio_pitch_do(aubioPitchDetector, aubioInput, aubioResult);
-        aubioIndex = 0;
-        float detectedFrequency = fvec_get_sample(aubioResult,0);
-        if(currentDetectedFrequency!=detectedFrequency && detectedFrequency != 0){
-            if((currentDetectedFrequency==-1) || (currentDetectedFrequency!=-1 && detectedFrequency<=currentDetectedFrequency*3)){
-                softwareCounter=0;
-                singerOnHold=false;
-                audioVisualiser->setRepaintRate(30);
-                currentDetectedFrequency=detectedFrequency;
-                for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
-                    if (!stProcessorActive[i]) continue;
-                    autoTuneFreqST(stProcessorPlaying[i], currentDetectedFrequency, i);
-                }
+    if(aubioIndex == (pitchDetectionWindowSize/numSamples)) aubioIndex = 0;
+
+    aubio_pitch_do(aubioPitchDetector, aubioInput, aubioResult);
+    float detectedFrequency = fvec_get_sample(aubioResult,0);
+    if(currentDetectedFrequency!=detectedFrequency && detectedFrequency != 0){
+        if((currentDetectedFrequency==-1) || (currentDetectedFrequency!=-1 && detectedFrequency<=currentDetectedFrequency*3)){
+            softwareCounter=0;
+            singerOnHold=false;
+            currentDetectedFrequency=detectedFrequency;
+            for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
+                if (!stProcessorActive[i]) continue;
+                autoTuneFreqST(stProcessorPlaying[i], currentDetectedFrequency, i);
             }
         }
         else if(detectedFrequency == 0) softwareCounter++;
@@ -204,7 +186,6 @@ void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
         if(softwareCounter>=2 && !singerOnHold){
             singerOnHold=true;
             audioVisualiser->clear();
-            audioVisualiser->setRepaintRate(10);
             for (int processorIndex = 0; processorIndex < ST_PROCESSOR_NUMBER; processorIndex++) {
                 if (!stProcessorActive[processorIndex])continue;
                 stProcessors[processorIndex]->clear();

@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="BTnDL4" name="ReMastered" projectType="audioplug" pluginCharacteristicsValue="pluginWantsMidiIn"
               companyName="GBY" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginFormats="buildAU,buildStandalone,buildVST3" headerPath="../../Library&#10;../../Library/SoundTouch Library&#10;./aubio.framework/Headers&#10;">
+              pluginFormats="buildAU,buildStandalone,buildVST3" headerPath="../../Library&#10;../../Library/SoundTouch Library&#10;../../Library/aubio.framework/Headers&#10;./&#10;">
   <MAINGROUP id="GLaO8N" name="ReMastered">
     <GROUP id="{4F589DC1-7474-1FE2-33B0-2FD19EBA3F20}" name="Source">
       <FILE id="Bh09D6" name="PluginProcessor.cpp" compile="1" resource="0"

@@ -159,7 +159,28 @@ public:
     
     //=================================================================================
     
-    AudioVisualiserComponent* getAudioVisualiserComponent(){ return this->audioVisualiser;}
+    AudioVisualiserComponent* getAudioVisualiserComponent(){ return this->audioVisualiser; }
+    MidiKeyboardComponent* getMidiKeyboardComponent(){ return this->midiKeyboardComponent; }
+    
+    //=================================================================================
+    
+    void handleMidiMessage(MidiMessage m){
+        if (m.isNoteOn())
+        {
+            int firstFreeSt = getFirstFreeSt();
+            if (firstFreeSt != -1) {
+                autoTuneFreqST(MidiMessage::getMidiNoteInHertz(m.getNoteNumber()), currentDetectedFrequency, firstFreeSt);
+                stProcessorActive[firstFreeSt] = true;
+                stProcessorVolume[firstFreeSt] = m.getFloatVelocity();
+                stProcessorPlaying[firstFreeSt] = MidiMessage::getMidiNoteInHertz(m.getNoteNumber());
+            }
+        }
+        else if (m.isNoteOff())
+        {
+            int stProcessorIndex = findStProcessorPlaying(MidiMessage::getMidiNoteInHertz(m.getNoteNumber()));
+            freeStProcessor(stProcessorIndex);
+        }
+    }
     
 private:
     soundtouch::SoundTouch* stProcessors[ST_PROCESSOR_NUMBER];
@@ -185,13 +206,15 @@ private:
       329.63,349.23,369.99,392.00,415.30,440.00,466.16,493.88,523.25,554.37,
       587.33,622.25,659.26,698.46,739.99,783.99,830.61,880.00,932.33,987.77,1046.50 };
     //==============================================================================
-    int windowSize = 1024;
-    int aubioIndex = 0;
+    int pitchDetectionWindowSize = 4096;
+    int aubioIndex = 0; // pitch detection window size can be higher than the numSamples here, so using this to get the correct FFT sample index for pitch detection
     aubio_pitch_t* aubioPitchDetector;
-    fvec_t* aubioInput = new_fvec(this->windowSize);
+    fvec_t* aubioInput = new_fvec(this->pitchDetectionWindowSize);
     fvec_t* aubioResult = new_fvec(1);
     //===============================================================================
     AudioVisualiserComponent* audioVisualiser = new AudioVisualiserComponent(1);
+    juce::MidiKeyboardState keyboardState;
+    MidiKeyboardComponent* midiKeyboardComponent = new MidiKeyboardComponent(keyboardState,juce::MidiKeyboardComponent::horizontalKeyboard);
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReMasteredAudioProcessor)
 };

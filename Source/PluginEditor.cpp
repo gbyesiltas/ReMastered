@@ -10,10 +10,13 @@ ReMasteredAudioProcessorEditor::ReMasteredAudioProcessorEditor (ReMasteredAudioP
     this->audioVisualiser = p.getAudioVisualiserComponent();
     this->audioVisualiser->setBounds(0,0,500, 250);
     this->audioVisualiser->setColours(Colours::black,Colours::violet);
-    this->audioVisualiser->setRepaintRate(30);
+    this->audioVisualiser->setRepaintRate(60);
     
+    this->midiKeyboardComponent = p.getMidiKeyboardComponent();
     this->midiKeyboardComponent->setBounds(0, 250, 500, 50);
-    //TODO: Make this keyboard component actually interactive
+    this->midiKeyboardComponent->setEnabled(true);
+    this->midiKeyboardComponent->setKeyWidth(20);
+
     addAndMakeVisible(this->audioVisualiser);
     addAndMakeVisible(this->midiKeyboardComponent);
 }
