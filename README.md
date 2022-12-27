@@ -1,7 +1,7 @@
 # ReMastered
 
 MIDI controlled harmonizer (prismizer) plugin made using the JUCE framework.
-This plugin uses the aubio library for pitch detection and SoundTouch library for pitch shifting.
+This plugin uses the aubio library for pitch detection and SoundTouch library for pitch shifting. The main processing block is in the `~/Source/PluginProcessor.cpp` file.
 
 If you want to build this project using XCode, you need to import the `aubio.framework` from `./Library/aubio.framework`, and add the correct header path.
 
