@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="BTnDL4" name="ReMastered" projectType="audioplug" pluginCharacteristicsValue="pluginWantsMidiIn"
               companyName="GBY" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginFormats="buildAU,buildAUv3,buildStandalone,buildVST3" headerPath="../../Library&#10;../../Library/SoundTouch Library&#10;../../Library/aubio.framework/Headers&#10;./&#10;">
+              pluginFormats="buildStandalone,buildVST3" headerPath="../../Library&#10;../../Library/SoundTouch Library&#10;../../Library/aubio&#10;./../Library/aubio/*&#10;./../Library/aubio/**&#10;">
   <MAINGROUP id="GLaO8N" name="ReMastered">
     <GROUP id="{4F589DC1-7474-1FE2-33B0-2FD19EBA3F20}" name="Source">
       <FILE id="Bh09D6" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -14,6 +14,172 @@
       <FILE id="iUoD9m" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
     <GROUP id="{356CC453-1A08-5AE3-20BD-A26180875F23}" name="Library">
+      <GROUP id="{F8420A18-0398-0750-6A67-51759D468E4C}" name="aubio">
+        <GROUP id="{50D79595-199E-BD2E-A5BD-DF2C4C174D9C}" name="effects">
+          <FILE id="RSS6H7" name="pitchshift.h" compile="0" resource="0" file="Library/aubio/effects/pitchshift.h"/>
+          <FILE id="eGkhdf" name="pitchshift_dummy.c" compile="1" resource="0"
+                file="Library/aubio/effects/pitchshift_dummy.c"/>
+          <FILE id="f37R1p" name="pitchshift_rubberband.c" compile="1" resource="0"
+                file="Library/aubio/effects/pitchshift_rubberband.c"/>
+          <FILE id="UdhjjL" name="rubberband_utils.c" compile="1" resource="0"
+                file="Library/aubio/effects/rubberband_utils.c"/>
+          <FILE id="g5c9Z2" name="timestretch.h" compile="0" resource="0" file="Library/aubio/effects/timestretch.h"/>
+          <FILE id="etEUu2" name="timestretch_dummy.c" compile="1" resource="0"
+                file="Library/aubio/effects/timestretch_dummy.c"/>
+          <FILE id="tsXqif" name="timestretch_rubberband.c" compile="1" resource="0"
+                file="Library/aubio/effects/timestretch_rubberband.c"/>
+        </GROUP>
+        <GROUP id="{4B01B3DC-D5F7-B796-CFD8-3F11B7DFE3BF}" name="io">
+          <FILE id="VEWh5w" name="audio_unit.c" compile="1" resource="0" file="Library/aubio/io/audio_unit.c"/>
+          <FILE id="gy8z6V" name="audio_unit.h" compile="0" resource="0" file="Library/aubio/io/audio_unit.h"/>
+          <FILE id="QZ5Qrv" name="ioutils.c" compile="1" resource="0" file="Library/aubio/io/ioutils.c"/>
+          <FILE id="tgV7RG" name="ioutils.h" compile="0" resource="0" file="Library/aubio/io/ioutils.h"/>
+          <FILE id="MRkgxi" name="sink.c" compile="1" resource="0" file="Library/aubio/io/sink.c"/>
+          <FILE id="FmjPvX" name="sink.h" compile="0" resource="0" file="Library/aubio/io/sink.h"/>
+          <FILE id="yPEADG" name="sink_apple_audio.c" compile="1" resource="0"
+                file="Library/aubio/io/sink_apple_audio.c"/>
+          <FILE id="sDdUrU" name="sink_apple_audio.h" compile="0" resource="0"
+                file="Library/aubio/io/sink_apple_audio.h"/>
+          <FILE id="uTB1eT" name="sink_flac.c" compile="1" resource="0" file="Library/aubio/io/sink_flac.c"/>
+          <FILE id="C62Yaj" name="sink_sndfile.c" compile="1" resource="0" file="Library/aubio/io/sink_sndfile.c"/>
+          <FILE id="zG6eZk" name="sink_sndfile.h" compile="0" resource="0" file="Library/aubio/io/sink_sndfile.h"/>
+          <FILE id="oDrTU8" name="sink_vorbis.c" compile="1" resource="0" file="Library/aubio/io/sink_vorbis.c"/>
+          <FILE id="YG6XhF" name="sink_wavwrite.c" compile="1" resource="0" file="Library/aubio/io/sink_wavwrite.c"/>
+          <FILE id="fKmZGG" name="sink_wavwrite.h" compile="0" resource="0" file="Library/aubio/io/sink_wavwrite.h"/>
+          <FILE id="BpPuZh" name="source.c" compile="1" resource="0" file="Library/aubio/io/source.c"/>
+          <FILE id="fFCL7L" name="source.h" compile="0" resource="0" file="Library/aubio/io/source.h"/>
+          <FILE id="dmLirU" name="source_apple_audio.c" compile="1" resource="0"
+                file="Library/aubio/io/source_apple_audio.c"/>
+          <FILE id="ZojTPa" name="source_apple_audio.h" compile="0" resource="0"
+                file="Library/aubio/io/source_apple_audio.h"/>
+          <FILE id="BMxNHW" name="source_avcodec.c" compile="1" resource="0"
+                file="Library/aubio/io/source_avcodec.c"/>
+          <FILE id="f3pBLv" name="source_avcodec.h" compile="0" resource="0"
+                file="Library/aubio/io/source_avcodec.h"/>
+          <FILE id="bl0cfq" name="source_sndfile.c" compile="1" resource="0"
+                file="Library/aubio/io/source_sndfile.c"/>
+          <FILE id="UAgw8N" name="source_sndfile.h" compile="0" resource="0"
+                file="Library/aubio/io/source_sndfile.h"/>
+          <FILE id="LxFBg8" name="source_wavread.c" compile="1" resource="0"
+                file="Library/aubio/io/source_wavread.c"/>
+          <FILE id="HYOYy7" name="source_wavread.h" compile="0" resource="0"
+                file="Library/aubio/io/source_wavread.h"/>
+          <FILE id="uHitCC" name="utils_apple_audio.c" compile="1" resource="0"
+                file="Library/aubio/io/utils_apple_audio.c"/>
+        </GROUP>
+        <GROUP id="{8B16E7AC-6DD6-FA88-DFFD-4C9D034668CC}" name="notes">
+          <FILE id="z77Lys" name="notes.c" compile="1" resource="0" file="Library/aubio/notes/notes.c"/>
+          <FILE id="WiuB6P" name="notes.h" compile="0" resource="0" file="Library/aubio/notes/notes.h"/>
+        </GROUP>
+        <GROUP id="{C5325FDF-36A3-EEB7-145E-856E8F1C09B4}" name="onset">
+          <FILE id="wup7eq" name="onset.c" compile="1" resource="0" file="Library/aubio/onset/onset.c"/>
+          <FILE id="W7X1FE" name="onset.h" compile="0" resource="0" file="Library/aubio/onset/onset.h"/>
+          <FILE id="vp8tQV" name="peakpicker.c" compile="1" resource="0" file="Library/aubio/onset/peakpicker.c"/>
+          <FILE id="VwZoUW" name="peakpicker.h" compile="0" resource="0" file="Library/aubio/onset/peakpicker.h"/>
+        </GROUP>
+        <GROUP id="{11899BD1-4211-B4A4-CE04-713D7456D4EC}" name="pitch">
+          <FILE id="XAoqbq" name="pitch.c" compile="1" resource="0" file="Library/aubio/pitch/pitch.c"/>
+          <FILE id="Bkn6SH" name="pitch.h" compile="0" resource="0" file="Library/aubio/pitch/pitch.h"/>
+          <FILE id="s0iPZH" name="pitchfcomb.c" compile="1" resource="0" file="Library/aubio/pitch/pitchfcomb.c"/>
+          <FILE id="ogbGSE" name="pitchfcomb.h" compile="0" resource="0" file="Library/aubio/pitch/pitchfcomb.h"/>
+          <FILE id="yh8wQY" name="pitchmcomb.c" compile="1" resource="0" file="Library/aubio/pitch/pitchmcomb.c"/>
+          <FILE id="EXRZgs" name="pitchmcomb.h" compile="0" resource="0" file="Library/aubio/pitch/pitchmcomb.h"/>
+          <FILE id="Ttt0fJ" name="pitchschmitt.c" compile="1" resource="0" file="Library/aubio/pitch/pitchschmitt.c"/>
+          <FILE id="rholZq" name="pitchschmitt.h" compile="0" resource="0" file="Library/aubio/pitch/pitchschmitt.h"/>
+          <FILE id="NArJKZ" name="pitchspecacf.c" compile="1" resource="0" file="Library/aubio/pitch/pitchspecacf.c"/>
+          <FILE id="Sw3tq7" name="pitchspecacf.h" compile="0" resource="0" file="Library/aubio/pitch/pitchspecacf.h"/>
+          <FILE id="clwO6I" name="pitchyin.c" compile="1" resource="0" file="Library/aubio/pitch/pitchyin.c"/>
+          <FILE id="ukbN9R" name="pitchyin.h" compile="0" resource="0" file="Library/aubio/pitch/pitchyin.h"/>
+          <FILE id="VCgC2A" name="pitchyinfast.c" compile="1" resource="0" file="Library/aubio/pitch/pitchyinfast.c"/>
+          <FILE id="c04FC3" name="pitchyinfast.h" compile="0" resource="0" file="Library/aubio/pitch/pitchyinfast.h"/>
+          <FILE id="ElCEmA" name="pitchyinfft.c" compile="1" resource="0" file="Library/aubio/pitch/pitchyinfft.c"/>
+          <FILE id="u9r4Oc" name="pitchyinfft.h" compile="0" resource="0" file="Library/aubio/pitch/pitchyinfft.h"/>
+        </GROUP>
+        <GROUP id="{768DF9BC-AC21-AFB3-B18C-FADBCA466081}" name="spectral">
+          <FILE id="QfrV7P" name="awhitening.c" compile="1" resource="0" file="Library/aubio/spectral/awhitening.c"/>
+          <FILE id="QroIDl" name="awhitening.h" compile="0" resource="0" file="Library/aubio/spectral/awhitening.h"/>
+          <FILE id="hTRWoy" name="dct.c" compile="1" resource="0" file="Library/aubio/spectral/dct.c"/>
+          <FILE id="Ru7DoO" name="dct.h" compile="0" resource="0" file="Library/aubio/spectral/dct.h"/>
+          <FILE id="nzjTxq" name="dct_accelerate.c" compile="1" resource="0"
+                file="Library/aubio/spectral/dct_accelerate.c"/>
+          <FILE id="pa8PSh" name="dct_fftw.c" compile="1" resource="0" file="Library/aubio/spectral/dct_fftw.c"/>
+          <FILE id="BYSPOn" name="dct_ipp.c" compile="1" resource="0" file="Library/aubio/spectral/dct_ipp.c"/>
+          <FILE id="P6UkAb" name="dct_ooura.c" compile="1" resource="0" file="Library/aubio/spectral/dct_ooura.c"/>
+          <FILE id="DY9dPY" name="dct_plain.c" compile="1" resource="0" file="Library/aubio/spectral/dct_plain.c"/>
+          <FILE id="fyaqiB" name="fft.c" compile="1" resource="0" file="Library/aubio/spectral/fft.c"/>
+          <FILE id="mI4t6n" name="fft.h" compile="0" resource="0" file="Library/aubio/spectral/fft.h"/>
+          <FILE id="lM0KhW" name="filterbank.c" compile="1" resource="0" file="Library/aubio/spectral/filterbank.c"/>
+          <FILE id="tya9WU" name="filterbank.h" compile="0" resource="0" file="Library/aubio/spectral/filterbank.h"/>
+          <FILE id="POYMDq" name="filterbank_mel.c" compile="1" resource="0"
+                file="Library/aubio/spectral/filterbank_mel.c"/>
+          <FILE id="w5nPnd" name="filterbank_mel.h" compile="0" resource="0"
+                file="Library/aubio/spectral/filterbank_mel.h"/>
+          <FILE id="lnOhLG" name="mfcc.c" compile="1" resource="0" file="Library/aubio/spectral/mfcc.c"/>
+          <FILE id="sGQmjU" name="mfcc.h" compile="0" resource="0" file="Library/aubio/spectral/mfcc.h"/>
+          <FILE id="VueQem" name="ooura_fft8g.c" compile="1" resource="0" file="Library/aubio/spectral/ooura_fft8g.c"/>
+          <FILE id="KAEUIr" name="phasevoc.c" compile="1" resource="0" file="Library/aubio/spectral/phasevoc.c"/>
+          <FILE id="Kxdo1H" name="phasevoc.h" compile="0" resource="0" file="Library/aubio/spectral/phasevoc.h"/>
+          <FILE id="XhKsY9" name="specdesc.c" compile="1" resource="0" file="Library/aubio/spectral/specdesc.c"/>
+          <FILE id="WEopHb" name="specdesc.h" compile="0" resource="0" file="Library/aubio/spectral/specdesc.h"/>
+          <FILE id="cW611g" name="statistics.c" compile="1" resource="0" file="Library/aubio/spectral/statistics.c"/>
+          <FILE id="cNJXHT" name="tss.c" compile="1" resource="0" file="Library/aubio/spectral/tss.c"/>
+          <FILE id="i0tPA3" name="tss.h" compile="0" resource="0" file="Library/aubio/spectral/tss.h"/>
+        </GROUP>
+        <GROUP id="{8117F1E9-8BC6-1A12-72EC-9667269FBBF4}" name="synth">
+          <FILE id="LvfbJy" name="sampler.c" compile="1" resource="0" file="Library/aubio/synth/sampler.c"/>
+          <FILE id="HadBZB" name="sampler.h" compile="0" resource="0" file="Library/aubio/synth/sampler.h"/>
+          <FILE id="FUYKNc" name="wavetable.c" compile="1" resource="0" file="Library/aubio/synth/wavetable.c"/>
+          <FILE id="Dbh6KO" name="wavetable.h" compile="0" resource="0" file="Library/aubio/synth/wavetable.h"/>
+        </GROUP>
+        <GROUP id="{83B3262A-9C88-341C-CA5C-0A8A09A9E544}" name="tempo">
+          <FILE id="szbDeN" name="beattracking.c" compile="1" resource="0" file="Library/aubio/tempo/beattracking.c"/>
+          <FILE id="ROUTB7" name="beattracking.h" compile="0" resource="0" file="Library/aubio/tempo/beattracking.h"/>
+          <FILE id="XsCwd1" name="tempo.c" compile="1" resource="0" file="Library/aubio/tempo/tempo.c"/>
+          <FILE id="UqHCbC" name="tempo.h" compile="0" resource="0" file="Library/aubio/tempo/tempo.h"/>
+        </GROUP>
+        <GROUP id="{38AF3982-0676-4C65-1825-FF1474DCECF7}" name="temporal">
+          <FILE id="RC29Lx" name="a_weighting.c" compile="1" resource="0" file="Library/aubio/temporal/a_weighting.c"/>
+          <FILE id="H4NFgb" name="a_weighting.h" compile="0" resource="0" file="Library/aubio/temporal/a_weighting.h"/>
+          <FILE id="h4Oo4I" name="biquad.c" compile="1" resource="0" file="Library/aubio/temporal/biquad.c"/>
+          <FILE id="G4lZ5q" name="biquad.h" compile="0" resource="0" file="Library/aubio/temporal/biquad.h"/>
+          <FILE id="sp6aYr" name="c_weighting.c" compile="1" resource="0" file="Library/aubio/temporal/c_weighting.c"/>
+          <FILE id="Pg12eG" name="c_weighting.h" compile="0" resource="0" file="Library/aubio/temporal/c_weighting.h"/>
+          <FILE id="mRNFZa" name="filter.c" compile="1" resource="0" file="Library/aubio/temporal/filter.c"/>
+          <FILE id="U4ibcf" name="filter.h" compile="0" resource="0" file="Library/aubio/temporal/filter.h"/>
+          <FILE id="q6rmkm" name="resampler.c" compile="1" resource="0" file="Library/aubio/temporal/resampler.c"/>
+          <FILE id="EezgSj" name="resampler.h" compile="0" resource="0" file="Library/aubio/temporal/resampler.h"/>
+        </GROUP>
+        <GROUP id="{248221FD-BA24-D0D5-9360-EB120E8F972F}" name="utils">
+          <FILE id="Jf8HJO" name="hist.c" compile="1" resource="0" file="Library/aubio/utils/hist.c"/>
+          <FILE id="rSdR7Q" name="hist.h" compile="0" resource="0" file="Library/aubio/utils/hist.h"/>
+          <FILE id="xNXDlK" name="log.c" compile="1" resource="0" file="Library/aubio/utils/log.c"/>
+          <FILE id="mq6sSf" name="log.h" compile="0" resource="0" file="Library/aubio/utils/log.h"/>
+          <FILE id="Db4Lu0" name="parameter.c" compile="1" resource="0" file="Library/aubio/utils/parameter.c"/>
+          <FILE id="afdQDt" name="parameter.h" compile="0" resource="0" file="Library/aubio/utils/parameter.h"/>
+          <FILE id="y8BVlw" name="scale.c" compile="1" resource="0" file="Library/aubio/utils/scale.c"/>
+          <FILE id="wdGn0l" name="scale.h" compile="0" resource="0" file="Library/aubio/utils/scale.h"/>
+          <FILE id="gzT1tc" name="strutils.c" compile="1" resource="0" file="Library/aubio/utils/strutils.c"/>
+          <FILE id="MkyWsk" name="windll.c" compile="1" resource="0" file="Library/aubio/utils/windll.c"/>
+        </GROUP>
+        <FILE id="vJGDYh" name="aubio.h" compile="0" resource="0" file="Library/aubio/aubio.h"/>
+        <FILE id="ZZlLyb" name="aubio_priv.h" compile="0" resource="0" file="Library/aubio/aubio_priv.h"/>
+        <FILE id="ZAF7b7" name="cvec.c" compile="1" resource="0" file="Library/aubio/cvec.c"/>
+        <FILE id="ZCUSDK" name="cvec.h" compile="0" resource="0" file="Library/aubio/cvec.h"/>
+        <FILE id="Y6aubm" name="fmat.c" compile="1" resource="0" file="Library/aubio/fmat.c"/>
+        <FILE id="HYQAka" name="fmat.h" compile="0" resource="0" file="Library/aubio/fmat.h"/>
+        <FILE id="M7DxLj" name="fvec.c" compile="1" resource="0" file="Library/aubio/fvec.c"/>
+        <FILE id="WfaghF" name="fvec.h" compile="0" resource="0" file="Library/aubio/fvec.h"/>
+        <FILE id="iaIFad" name="lvec.c" compile="1" resource="0" file="Library/aubio/lvec.c"/>
+        <FILE id="FzZqEL" name="lvec.h" compile="0" resource="0" file="Library/aubio/lvec.h"/>
+        <FILE id="LBfUdR" name="mathutils.c" compile="1" resource="0" file="Library/aubio/mathutils.c"/>
+        <FILE id="czSLNT" name="mathutils.h" compile="0" resource="0" file="Library/aubio/mathutils.h"/>
+        <FILE id="UG5rNt" name="musicutils.c" compile="1" resource="0" file="Library/aubio/musicutils.c"/>
+        <FILE id="Rklhet" name="musicutils.h" compile="0" resource="0" file="Library/aubio/musicutils.h"/>
+        <FILE id="oPwdZ3" name="types.h" compile="0" resource="0" file="Library/aubio/types.h"/>
+        <FILE id="hBAL9T" name="vecutils.c" compile="1" resource="0" file="Library/aubio/vecutils.c"/>
+        <FILE id="vJcebQ" name="vecutils.h" compile="0" resource="0" file="Library/aubio/vecutils.h"/>
+        <FILE id="l0S8iR" name="wscript_build" compile="0" resource="1" file="Library/aubio/wscript_build"/>
+      </GROUP>
       <GROUP id="{065A886B-5EEC-1489-A3F5-12EF3963D8BC}" name="SoundTouch Library">
         <FILE id="ceFrPx" name="AAFilter.cpp" compile="1" resource="0" file="Library/SoundTouch Library/AAFilter.cpp"/>
         <FILE id="NUg4dL" name="AAFilter.h" compile="0" resource="0" file="Library/SoundTouch Library/AAFilter.h"/>
@@ -67,8 +233,7 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" microphonePermissionNeeded="1" frameworkSearchPaths="../../Library"
-               extraCustomFrameworks="../../Library/aubio.framework" embeddedFrameworks="../../Library/aubio.framework">
+    <XCODE_MAC targetFolder="Builds/MacOSX" microphonePermissionNeeded="1" frameworkSearchPaths="../../Library">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug"/>
         <CONFIGURATION isDebug="0" name="Release"/>
@@ -91,6 +256,29 @@
         <MODULEPATH id="juce_audio_basics" path="../../juce"/>
       </MODULEPATHS>
     </XCODE_MAC>
+    <XCODE_IPHONE targetFolder="Builds/iOS">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="~/JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_IPHONE>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

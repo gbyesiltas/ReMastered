@@ -171,18 +171,18 @@ void ReMasteredAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     if(aubioIndex == (pitchDetectionWindowSize/numSamples)) aubioIndex = 0;
 
     aubio_pitch_do(aubioPitchDetector, aubioInput, aubioResult);
-    float detectedFrequency = fvec_get_sample(aubioResult,0);
-    if(currentDetectedFrequency!=detectedFrequency && detectedFrequency != 0){
-        if((currentDetectedFrequency==-1) || (currentDetectedFrequency!=-1 && detectedFrequency<=currentDetectedFrequency*3)){
+    float newlyDetectedFrequency = fvec_get_sample(aubioResult,0);
+    if(currentDetectedFrequency!=newlyDetectedFrequency && newlyDetectedFrequency != 0){
+        if((currentDetectedFrequency==-1) || (currentDetectedFrequency!=-1 && newlyDetectedFrequency<=currentDetectedFrequency*3)){
             softwareCounter=0;
             singerOnHold=false;
-            currentDetectedFrequency=detectedFrequency;
+            currentDetectedFrequency=newlyDetectedFrequency;
             for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
                 if (!stProcessorActive[i]) continue;
                 autoTuneFreqST(stProcessorPlaying[i], currentDetectedFrequency, i);
             }
         }
-        else if(detectedFrequency == 0) softwareCounter++;
+        else if(newlyDetectedFrequency == 0) softwareCounter++;
         
         if(softwareCounter>=2 && !singerOnHold){
             singerOnHold=true;
