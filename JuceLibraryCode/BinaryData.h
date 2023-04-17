@@ -8,6 +8,9 @@
 
 namespace BinaryData
 {
+    extern const char*   wscript_build;
+    const int            wscript_buildSize = 1615;
+
     extern const char*   Makefile_am;
     const int            Makefile_amSize = 2804;
 
@@ -21,7 +24,7 @@ namespace BinaryData
     const int            soundtouch_config_h_inSize = 131;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 4;
+    const int namedResourceListSize = 5;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

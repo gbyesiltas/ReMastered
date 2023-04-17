@@ -9,8 +9,68 @@
 namespace BinaryData
 {
 
-//================== Makefile.am ==================
+//================== wscript_build ==================
 static const unsigned char temp_binary_data_0[] =
+"# vim:set syntax=python:\n"
+"\n"
+"uselib = []\n"
+"uselib += ['M']\n"
+"uselib += ['FFTW3', 'FFTW3F']\n"
+"uselib += ['INTEL_IPP']\n"
+"uselib += ['SAMPLERATE']\n"
+"uselib += ['SNDFILE']\n"
+"uselib += ['RUBBERBAND']\n"
+"uselib += ['AVCODEC']\n"
+"uselib += ['AVFORMAT']\n"
+"uselib += ['SWRESAMPLE']\n"
+"uselib += ['AVRESAMPLE']\n"
+"uselib += ['AVUTIL']\n"
+"uselib += ['VORBISENC']\n"
+"uselib += ['FLAC']\n"
+"uselib += ['BLAS']\n"
+"\n"
+"source = ctx.path.ant_glob('*.c **/*.c')\n"
+"\n"
+"ctx(features = 'c',\n"
+"        source = source,\n"
+"        includes = ['.'],\n"
+"        use = uselib,\n"
+"        target = 'lib_objects')\n"
+"\n"
+"# build libaubio.so (cshlib) and/or libaubio.a (cstlib)\n"
+"if ctx.env['DEST_OS'] in ['ios', 'iosimulator']:\n"
+"    build_features = ['cstlib', 'cshlib']\n"
+"elif ctx.env['DEST_OS'] in ['win32', 'win64']:\n"
+"    build_features = ['cstlib', 'cshlib gensyms']\n"
+"elif ctx.env['DEST_OS'] in ['emscripten']:\n"
+"    build_features = ['cstlib','cshlib']\n"
+"elif '--static' in ctx.env['LDFLAGS'] or '--static' in ctx.env['LINKFLAGS']:\n"
+"    # static in cflags, ...\n"
+"    build_features = ['cstlib']\n"
+"else:\n"
+"    # linux, darwin, android, mingw, ...\n"
+"    build_features = ['cstlib', 'cshlib']\n"
+"\n"
+"# also install static lib\n"
+"from waflib.Tools.c import cstlib\n"
+"cstlib.inst_to = '${LIBDIR}'\n"
+"\n"
+"for target in build_features:\n"
+"    ctx(features = 'c ' + target,\n"
+"            use = uselib + ['lib_objects'],\n"
+"            target = 'aubio',\n"
+"            export_symbols_regex=r'(?:.*aubio|fvec|lvec|cvec|fmat|new|del)_.*',\n"
+"            vnum = ctx.env['LIB_VERSION'])\n"
+"\n"
+"# install headers, except _priv.h ones\n"
+"ctx.install_files('${INCLUDEDIR}/aubio/',\n"
+"        ctx.path.ant_glob('**/*.h', excl = ['**_priv.h', 'config.h']),\n"
+"        relative_trick=True)\n";
+
+const char* wscript_build = (const char*) temp_binary_data_0;
+
+//================== Makefile.am ==================
+static const unsigned char temp_binary_data_1[] =
 "## Process this file with automake to create Makefile.in\n"
 "##\n"
 "## This file is part of SoundTouch, an audio processing library for pitch/time adjustments\n"
@@ -86,10 +146,10 @@ static const unsigned char temp_binary_data_0[] =
 "# libSoundTouchOpt_la_SOURCES = mmx_optimized.cpp sse_optimized.cpp \n"
 "# libSoundTouchOpt_la_CXXFLAGS = -O3 -msse -fcheck-new -I../../include\n";
 
-const char* Makefile_am = (const char*) temp_binary_data_0;
+const char* Makefile_am = (const char*) temp_binary_data_1;
 
 //================== SoundTouch.sln ==================
-static const unsigned char temp_binary_data_1[] =
+static const unsigned char temp_binary_data_2[] =
 "Microsoft Visual Studio Solution File, Format Version 12.00\n"
 "# Visual Studio 14\n"
 "VisualStudioVersion = 14.0.23107.0\n"
@@ -120,10 +180,10 @@ static const unsigned char temp_binary_data_1[] =
 "\tEndGlobalSection\n"
 "EndGlobal\n";
 
-const char* SoundTouch_sln = (const char*) temp_binary_data_1;
+const char* SoundTouch_sln = (const char*) temp_binary_data_2;
 
 //================== SoundTouch.vcxproj ==================
-static const unsigned char temp_binary_data_2[] =
+static const unsigned char temp_binary_data_3[] =
 "\xef\xbb\xbf<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 "<Project DefaultTargets=\"Build\" ToolsVersion=\"14.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n"
 "  <ItemGroup Label=\"ProjectConfigurations\">\n"
@@ -467,17 +527,17 @@ static const unsigned char temp_binary_data_2[] =
 "  </ImportGroup>\n"
 "</Project>";
 
-const char* SoundTouch_vcxproj = (const char*) temp_binary_data_2;
+const char* SoundTouch_vcxproj = (const char*) temp_binary_data_3;
 
 //================== soundtouch_config.h.in ==================
-static const unsigned char temp_binary_data_3[] =
+static const unsigned char temp_binary_data_4[] =
 "/* Use Float as Sample type */\n"
 "#undef SOUNDTOUCH_FLOAT_SAMPLES\n"
 "\n"
 "/* Use Integer as Sample type */\n"
 "#undef SOUNDTOUCH_INTEGER_SAMPLES\n";
 
-const char* soundtouch_config_h_in = (const char*) temp_binary_data_3;
+const char* soundtouch_config_h_in = (const char*) temp_binary_data_4;
 
 
 const char* getNamedResource (const char* resourceNameUTF8, int& numBytes);
@@ -491,6 +551,7 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 
     switch (hash)
     {
+        case 0x937afbf1:  numBytes = 1615; return wscript_build;
         case 0x1a187401:  numBytes = 2804; return Makefile_am;
         case 0x1e03f806:  numBytes = 1393; return SoundTouch_sln;
         case 0x9bb52799:  numBytes = 20000; return SoundTouch_vcxproj;
@@ -504,6 +565,7 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 
 const char* namedResourceList[] =
 {
+    "wscript_build",
     "Makefile_am",
     "SoundTouch_sln",
     "SoundTouch_vcxproj",
@@ -512,6 +574,7 @@ const char* namedResourceList[] =
 
 const char* originalFilenames[] =
 {
+    "wscript_build",
     "Makefile.am",
     "SoundTouch.sln",
     "SoundTouch.vcxproj",
