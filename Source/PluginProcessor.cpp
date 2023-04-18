@@ -99,7 +99,8 @@ void ReMasteredAudioProcessor::changeProgramName (int index, const juce::String&
 //==============================================================================
 void ReMasteredAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    if(this->aubioPitchDetector != nullptr || this->aubioPitchDetector != NULL) { del_aubio_pitch(aubioPitchDetector);
+    if(this->aubioPitchDetector != nullptr) {
+        del_aubio_pitch(aubioPitchDetector);
     }
     aubioPitchDetector = new_aubio_pitch("default",
                                          this->pitchDetectionWindowSize,
