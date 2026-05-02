@@ -156,7 +156,7 @@ private:
     juce::MidiKeyboardState keyboardState;
 
     //==============================================================================
-    std::atomic<float> autoHarmonyEnabled { 1.0f };
+    std::atomic<float> autoHarmonyEnabled { 0.0f };
     std::atomic<float> keyRoot { 0.0f };
     std::atomic<float> modeIndex { 5.0f };
     std::atomic<float> styleIndex { 1.0f };
@@ -166,7 +166,7 @@ private:
     std::atomic<float> detuneCents { 12.0f };
     std::atomic<float> glideMs { 70.0f };
     std::atomic<float> motionRateHz { 1.20f };
-    std::atomic<float> motionDepth { 0.55f };
+    std::atomic<float> motionDepth { 0.0f };
     std::atomic<float> dryMix { 0.68f };
     std::atomic<float> outputGain { 0.90f };
     std::atomic<float> driveAmount { 0.08f };

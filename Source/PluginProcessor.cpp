@@ -309,7 +309,7 @@ void ReMasteredAudioProcessor::setStateInformation(const void* data, int sizeInB
     if (xmlState == nullptr || !xmlState->hasTagName("ReMasteredState"))
         return;
 
-    setAutoHarmonyEnabled(xmlState->getIntAttribute("autoHarmonyEnabled", 1) != 0);
+    setAutoHarmonyEnabled(xmlState->getIntAttribute("autoHarmonyEnabled", 0) != 0);
     setKeyRoot(xmlState->getIntAttribute("keyRoot", 0));
     setModeIndex(xmlState->getIntAttribute("modeIndex", 5));
     setStyleIndex(xmlState->getIntAttribute("styleIndex", 1));
@@ -319,7 +319,7 @@ void ReMasteredAudioProcessor::setStateInformation(const void* data, int sizeInB
     setDetuneCents(static_cast<float>(xmlState->getDoubleAttribute("detuneCents", 12.0)));
     setGlideMs(static_cast<float>(xmlState->getDoubleAttribute("glideMs", 70.0)));
     setMotionRateHz(static_cast<float>(xmlState->getDoubleAttribute("motionRateHz", 1.20)));
-    setMotionDepth(static_cast<float>(xmlState->getDoubleAttribute("motionDepth", 0.55)));
+    setMotionDepth(static_cast<float>(xmlState->getDoubleAttribute("motionDepth", 0.0)));
     setDryMix(static_cast<float>(xmlState->getDoubleAttribute("dryMix", 0.68)));
     setOutputGain(static_cast<float>(xmlState->getDoubleAttribute("outputGain", 0.90)));
     setDriveAmount(static_cast<float>(xmlState->getDoubleAttribute("driveAmount", 0.08)));
