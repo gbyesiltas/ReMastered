@@ -14,7 +14,7 @@ ReMasteredAudioProcessorEditor::ReMasteredAudioProcessorEditor(ReMasteredAudioPr
       audioProcessor(p),
       midiKeyboardComponent(audioProcessor.getKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard)
 {
-    setSize(920, 620);
+    setSize(920, 760);
     setOpaque(true);
 
     audioVisualiser.setColours(juce::Colours::black, juce::Colour::fromRGB(120, 220, 170));
@@ -117,7 +117,7 @@ void ReMasteredAudioProcessorEditor::paint(Graphics& g)
     g.fillAll(bg);
 
     auto area = getLocalBounds().reduced(10);
-    auto top = area.removeFromTop(250);
+    auto top = area.removeFromTop(juce::jlimit(200, 380, static_cast<int>(area.getHeight() * 0.50f)));
     auto left = top.removeFromLeft(top.getWidth() / 2).reduced(6);
     auto right = top.reduced(6);
 
@@ -136,7 +136,7 @@ void ReMasteredAudioProcessorEditor::resized()
 {
     auto area = getLocalBounds().reduced(10);
 
-    const int topHeight = juce::jlimit(200, 280, static_cast<int>(area.getHeight() * 0.42f));
+    const int topHeight = juce::jlimit(200, 380, static_cast<int>(area.getHeight() * 0.50f));
     auto top = area.removeFromTop(topHeight);
     auto leftPanel = top.removeFromLeft(top.getWidth() / 2).reduced(10);
     auto rightPanel = top.reduced(10);
