@@ -6,8 +6,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# JUCE checkout cloned at /Users/ds/Documents/PrismizerM4L/juce
-add_subdirectory(../juce juce-build)
+include(FetchContent)
+FetchContent_Declare(
+    JUCE
+    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+    GIT_TAG        8.0.4
+    GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(JUCE)
 
 juce_add_plugin(ReMastered
     COMPANY_NAME "GBY"
@@ -22,6 +28,8 @@ juce_add_plugin(ReMastered
     PLUGIN_CODE RmS1
     FORMATS VST3 AU Standalone
     PRODUCT_NAME "ReMastered"
+    MICROPHONE_PERMISSION_ENABLED TRUE
+    MICROPHONE_PERMISSION_TEXT "ReMastered needs microphone access to detect pitch and generate harmonies."
 )
 
 juce_generate_juce_header(ReMastered)
