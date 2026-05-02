@@ -3,22 +3,56 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-//This file holds the information mainly for the visuals of the plugin
-
-class ReMasteredAudioProcessorEditor  : public AudioProcessorEditor
+class ReMasteredAudioProcessorEditor : public AudioProcessorEditor
 {
 public:
-    ReMasteredAudioProcessorEditor (ReMasteredAudioProcessor&);
-    ~ReMasteredAudioProcessorEditor();
+    explicit ReMasteredAudioProcessorEditor(ReMasteredAudioProcessor&);
+    ~ReMasteredAudioProcessorEditor() override;
 
-    //==============================================================================
-    void paint (Graphics&) override;
+    void paint(Graphics&) override;
     void resized() override;
 
-    //==============================================================================
-    AudioVisualiserComponent* audioVisualiser;
-    MidiKeyboardComponent* midiKeyboardComponent;
-
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReMasteredAudioProcessorEditor)
+    void configureSlider(juce::Slider& slider,
+                         double min,
+                         double max,
+                         double step,
+                         const juce::String& suffix,
+                         std::function<void(float)> setter,
+                         float initial);
+
+    void configureCombo(juce::ComboBox& combo,
+                        const juce::StringArray& items,
+                        int selected,
+                        std::function<void(int)> setter);
+
+    ReMasteredAudioProcessor& audioProcessor;
+
+    AudioVisualiserComponent audioVisualiser { 1 };
+    MidiKeyboardComponent midiKeyboardComponent;
+
+    juce::ToggleButton autoHarmonyToggle { "Auto Harmony" };
+
+    juce::ComboBox keyBox;
+    juce::ComboBox modeBox;
+    juce::ComboBox styleBox;
+
+    juce::Slider voiceSlider;
+    juce::Slider harmonySlider;
+    juce::Slider spreadSlider;
+    juce::Slider detuneSlider;
+    juce::Slider glideSlider;
+    juce::Slider motionRateSlider;
+    juce::Slider motionDepthSlider;
+
+    juce::Slider drySlider;
+    juce::Slider gainSlider;
+    juce::Slider driveSlider;
+    juce::Slider delayMixSlider;
+    juce::Slider delayTimeSlider;
+    juce::Slider feedbackSlider;
+    juce::Slider reverbSlider;
+    juce::Slider claritySlider;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ReMasteredAudioProcessorEditor)
 };

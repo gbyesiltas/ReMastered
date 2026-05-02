@@ -2,6 +2,8 @@
 
 #include <JuceHeader.h>
 #include "SoundTouch.h"
+#include <array>
+#include <atomic>
 #include <vector>
 #include <aubio.h>
 #include <pitch/pitch.h>
@@ -14,21 +16,14 @@
 #define NO_CURRENT_FREQUENCY -2
 #define NO_DESIRED_FREQUENCY -3
 
-//==============================================================================
-/**
- */
 class ReMasteredAudioProcessor  : public AudioProcessor
 {
 public:
-    //==============================================================================
     ReMasteredAudioProcessor();
-    ~ReMasteredAudioProcessor();
+    ~ReMasteredAudioProcessor() override;
     
-    //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
-    
-    //==============================================================================
     
 #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
@@ -36,11 +31,9 @@ public:
     
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
     
-    //==============================================================================
     AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
     
-    //==============================================================================
     const String getName() const override;
     
     bool acceptsMidi() const override;
@@ -55,165 +48,143 @@ public:
     const String getProgramName (int index) override;
     void changeProgramName (int index, const String& newName) override;
     
-    //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    
-    //==============================================================================
-    void initSoundTouch() {
-        for (int processorIndex = 0; processorIndex < ST_PROCESSOR_NUMBER; processorIndex++) {
-            setStProcessor(processorIndex, new soundtouch::SoundTouch());
-            getStProcessor(processorIndex)->setSampleRate(sampleRate);
-            getStProcessor(processorIndex)->setChannels(CHANNEL_NUMBER);
-            getStProcessor(processorIndex)->setPitch(1);
-            getStProcessor(processorIndex)->setSetting(SETTING_USE_QUICKSEEK, 0);  //quick algorithm mode
-            setStProcessorActive(processorIndex, false);
-        }
-    }
-    soundtouch::SoundTouch* getStProcessor(int processorIndex) {
-        return stProcessors[processorIndex];
-    }
-    void setStProcessor(int processorIndex, soundtouch::SoundTouch* newStProcessor) {
-        if (processorIndex < ST_PROCESSOR_NUMBER) stProcessors[processorIndex] = newStProcessor;
-    }
-    
-    int getFirstActiveSt() {
-        for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
-            if (stProcessorActive[i]) return i;
-        }
-        return -1;
-    }
-    int getFirstFreeSt() {
-        for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
-            if (stProcessorActive[i] == false) return i;
-        }
-        return -1;
-    }
-    int getNumberOfActiveSt() {
-        int num = 0;
-        for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
-            if (stProcessorActive[i]) num++;
-        }
-        return num;
-    }
-    int findStProcessorPlaying(float noteInHz) {
-        for (int i = 0; i < ST_PROCESSOR_NUMBER; i++) {
-            if (stProcessorPlaying[i] == noteInHz && stProcessorActive[i]) return i;
-        }
-        return -1;
-    }
-    
-    bool isStProcessorActive(int processorIndex) {
-        return stProcessorActive[processorIndex];
-    }
-    void setStProcessorActive(int processorIndex, bool active) {
-        stProcessorActive[processorIndex] = active;
-    }
-    void freeStProcessor(int processorIndex) {
-        if (processorIndex == -1) return;
-        
-        stProcessors[processorIndex]->clear();
-        stProcessorActive[processorIndex] = false;
-    }
-    void clearStProcessors(bool deleteProcessors) {
-        for (int processorIndex = 0; processorIndex < ST_PROCESSOR_NUMBER; processorIndex++) {
-            stProcessors[processorIndex]->clear();
-            if(deleteProcessors) delete stProcessors[processorIndex];
-        }
-    }
-    
-    bool canActiveProcessorsOutput(int numSamplesToOutput) {
-        bool enoughSamples = true;
-        bool atLeastOneActiveProcessor = false;
-        for (int processorIndex = 0; processorIndex < ST_PROCESSOR_NUMBER; processorIndex++) {
-            if (stProcessorActive[processorIndex]) {
-                if (stProcessors[processorIndex]->numSamples() < numSamplesToOutput) enoughSamples = false;
-                atLeastOneActiveProcessor = true;
-            }
-        }
-        return enoughSamples && atLeastOneActiveProcessor;
-    }
-    
-    //===============================================================================
-    
-    int autoTuneFreqST(float desiredFrequency, float currentFrequency, int stProcessorIndex) {
-        if (currentFrequency == -1) {
-            DBG("No current frequency");
-            return NO_CURRENT_FREQUENCY;
-        }
-        
-        if (stProcessorIndex == -1) {
-            DBG("No processor input");
-            return NO_PROCESSOR_INPUT;
-        }
-        
-        if (desiredFrequency == 0) {
-            DBG("No desired frequency");
-            return NO_DESIRED_FREQUENCY;
-        }
-        
-        float correctionFactor = desiredFrequency / currentFrequency;
-        stProcessors[stProcessorIndex]->setPitch(correctionFactor);
-        return 1;
-    }
-    
-    //=================================================================================
-    
-    AudioVisualiserComponent* getAudioVisualiserComponent(){ return this->audioVisualiser; }
-    MidiKeyboardComponent* getMidiKeyboardComponent(){ return this->midiKeyboardComponent; }
-    
-    //=================================================================================
-    
-    void handleMidiMessage(MidiMessage m){
-        if (m.isNoteOn())
-        {
-            int firstFreeSt = getFirstFreeSt();
-            if (firstFreeSt != -1) {
-                autoTuneFreqST(MidiMessage::getMidiNoteInHertz(m.getNoteNumber()), currentDetectedFrequency, firstFreeSt);
-                stProcessorActive[firstFreeSt] = true;
-                stProcessorVolume[firstFreeSt] = m.getFloatVelocity();
-                stProcessorPlaying[firstFreeSt] = MidiMessage::getMidiNoteInHertz(m.getNoteNumber());
-            }
-        }
-        else if (m.isNoteOff())
-        {
-            int stProcessorIndex = findStProcessorPlaying(MidiMessage::getMidiNoteInHertz(m.getNoteNumber()));
-            freeStProcessor(stProcessorIndex);
-        }
-    }
+
+    juce::MidiKeyboardState& getKeyboardState() { return keyboardState; }
+    void setVisualiserTarget(AudioVisualiserComponent* visualiserTarget) { visualiser.store(visualiserTarget); }
+
+    void handleMidiMessage(const MidiMessage& m);
+
+    // UI controls
+    void setAutoHarmonyEnabled(bool enabled);
+    bool getAutoHarmonyEnabled() const;
+    void setKeyRoot(int root);
+    int getKeyRoot() const;
+    void setModeIndex(int mode);
+    int getModeIndex() const;
+    void setStyleIndex(int style);
+    int getStyleIndex() const;
+    void setVoiceCount(int voices);
+    int getVoiceCount() const;
+    void setHarmonyAmount(float amount);
+    float getHarmonyAmount() const;
+    void setSpreadAmount(float amount);
+    float getSpreadAmount() const;
+    void setDetuneCents(float cents);
+    float getDetuneCents() const;
+    void setGlideMs(float ms);
+    float getGlideMs() const;
+    void setMotionRateHz(float hz);
+    float getMotionRateHz() const;
+    void setMotionDepth(float amount);
+    float getMotionDepth() const;
+    void setDryMix(float mix);
+    float getDryMix() const;
+    void setOutputGain(float gain);
+    float getOutputGain() const;
+    void setDriveAmount(float amount);
+    float getDriveAmount() const;
+    void setDelayMix(float mix);
+    float getDelayMix() const;
+    void setDelayTimeMs(float ms);
+    float getDelayTimeMs() const;
+    void setDelayFeedback(float feedback);
+    float getDelayFeedback() const;
+    void setReverbMix(float mix);
+    float getReverbMix() const;
+    void setClarity(float amount);
+    float getClarity() const;
     
 private:
-    soundtouch::SoundTouch* stProcessors[ST_PROCESSOR_NUMBER];
-    bool stProcessorActive[ST_PROCESSOR_NUMBER];
-    float stProcessorPlaying[ST_PROCESSOR_NUMBER];
-    float stProcessorVolume[ST_PROCESSOR_NUMBER];
+    void initSoundTouch();
+    soundtouch::SoundTouch* getStProcessor(int processorIndex) const;
+    void setStProcessor(int processorIndex, soundtouch::SoundTouch* newStProcessor);
+    int getFirstActiveSt() const;
+    int getFirstFreeSt() const;
+    int getNumberOfActiveSt() const;
+    int findStProcessorPlaying(float noteInHz, bool manualOnly) const;
+    bool isStProcessorActive(int processorIndex) const;
+    void setStProcessorActive(int processorIndex, bool active);
+    void freeStProcessor(int processorIndex);
+    void clearStProcessors(bool deleteProcessors);
+    bool canActiveProcessorsOutput(int numSamplesToOutput) const;
+    int autoTuneFreqST(float desiredFrequency, float currentFrequency, int stProcessorIndex);
+
+    bool shouldUseAutoHarmony() const;
+    void updatePitchDetection(const AudioBuffer<float>& buffer);
+    void updateAutoHarmonyVoices(int numSamples);
+    void applyPitchGlideAndTune(int numSamples);
+    void processHarmonyVoices(const std::vector<float>& readBuffer, int numSamples, AudioBuffer<float>& outputBuffer);
+    void applyPostFx(AudioBuffer<float>& outputBuffer, const std::vector<float>& dryInput);
+    int quantizeMidiToScale(int midiNote) const;
+    int quantizeToNearestScaleOffset(int midiOffsetFromRoot) const;
+    float clampFrequency(float hz) const;
+    void setReverbFromParams();
+    void resetDelayBuffer();
+    void syncPitchRatiosToCurrentFrequency();
+    void clearAutoProcessors();
+    void clearManualProcessors();
+
+    soundtouch::SoundTouch* stProcessors[ST_PROCESSOR_NUMBER] = {};
+    bool stProcessorActive[ST_PROCESSOR_NUMBER] = {};
+    bool stProcessorManual[ST_PROCESSOR_NUMBER] = {};
+    float stProcessorPlaying[ST_PROCESSOR_NUMBER] = {};
+    float stProcessorVolume[ST_PROCESSOR_NUMBER] = {};
+    float stProcessorCurrentFrequency[ST_PROCESSOR_NUMBER] = {};
+    float stProcessorTargetFrequency[ST_PROCESSOR_NUMBER] = {};
+
     //==============================================================================
-    int sampleRate = 44100; //default value, can be changed
-    float currentDetectedFrequency = -1;
-    float currentNoteIndex = -1;
-    float currentGoalFrequency = 0.0f;
-    //==============================================================================
+    int sampleRate = 44100;
+    float currentDetectedFrequency = -1.0f;
+
     std::vector<std::vector<float>> st_buf;
-    int softwareCounter = 0;
     bool singerOnHold = false;
-    
-    float noteFrequencies[73] = { 16.35,17.32,18.35,19.45,20.60,21.83,23.12,24.50,
-        25.96,27.50,29.14,30.87,32.70,34.65,36.71,38.89,41.20,43.65,46.25,49.00,
-        51.91,55.00,58.27,61.74,65.41,69.30,73.42,77.78,82.41,87.31,92.50,98.00,
-        103.83,110.00,116.54,123.47,130.81,138.59,146.83,155.56,164.81,174.61,
-        185.00,196.00,207.65,220.00,233.08,246.94,261.63,277.18,293.66,311.13,
-        329.63,349.23,369.99,392.00,415.30,440.00,466.16,493.88,523.25,554.37,
-        587.33,622.25,659.26,698.46,739.99,783.99,830.61,880.00,932.33,987.77,1046.50 };
+
+    int singerHoldCounter = 0;
+    int manualNotesDown = 0;
+    float autoMotionPhase = 0.0f;
+
     //==============================================================================
     int pitchDetectionWindowSize = 4096;
-    int aubioIndex = 0; // pitch detection window size can be higher than the numSamples here, so using this to get the correct FFT sample index for pitch detection
-    aubio_pitch_t* aubioPitchDetector;
-    fvec_t* aubioInput = new_fvec(this->pitchDetectionWindowSize);
-    fvec_t* aubioResult = new_fvec(1);
-    //===============================================================================
-    AudioVisualiserComponent* audioVisualiser = new AudioVisualiserComponent(1);
+    aubio_pitch_t* aubioPitchDetector = nullptr;
+    fvec_t* aubioInput = nullptr;
+    fvec_t* aubioResult = nullptr;
+
+    //==============================================================================
+    std::atomic<AudioVisualiserComponent*> visualiser { nullptr }; // non-owning pointer set by editor
     juce::MidiKeyboardState keyboardState;
-    MidiKeyboardComponent* midiKeyboardComponent = new MidiKeyboardComponent(keyboardState,juce::MidiKeyboardComponent::horizontalKeyboard);
+
+    //==============================================================================
+    std::atomic<float> autoHarmonyEnabled { 0.0f };
+    std::atomic<float> keyRoot { 0.0f };
+    std::atomic<float> modeIndex { 5.0f };
+    std::atomic<float> styleIndex { 1.0f };
+    std::atomic<float> voiceCount { 4.0f };
+    std::atomic<float> harmonyAmount { 0.74f };
+    std::atomic<float> spreadAmount { 0.42f };
+    std::atomic<float> detuneCents { 12.0f };
+    std::atomic<float> glideMs { 70.0f };
+    std::atomic<float> motionRateHz { 1.20f };
+    std::atomic<float> motionDepth { 0.0f };
+    std::atomic<float> dryMix { 0.68f };
+    std::atomic<float> outputGain { 0.90f };
+    std::atomic<float> driveAmount { 0.08f };
+    std::atomic<float> delayMix { 0.16f };
+    std::atomic<float> delayTimeMs { 320.0f };
+    std::atomic<float> delayFeedback { 0.28f };
+    std::atomic<float> reverbMix { 0.24f };
+    std::atomic<float> clarity { 0.58f };
+    std::atomic<bool> reverbDirty { true };
+
+    std::vector<float> dryInputBuf;
+    std::vector<float> wetBuf;
+    std::vector<float> delayBuffer;
+    int delayWriteIndex = 0;
+    juce::Reverb reverb;
+    juce::Reverb::Parameters reverbParams;
+    float wetHighPassPrevInput = 0.0f;
+    float wetHighPassPrevOutput = 0.0f;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReMasteredAudioProcessor)
 };
