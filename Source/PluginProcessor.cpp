@@ -181,6 +181,8 @@ void ReMasteredAudioProcessor::prepareToPlay(double newSampleRate, int samplesPe
     clearStProcessors(false);
 
     st_buf.assign(ST_PROCESSOR_NUMBER, std::vector<float>(samplesPerBlock, 0.0f));
+    dryInputBuf.assign(static_cast<size_t>(samplesPerBlock), 0.0f);
+    wetBuf.assign(static_cast<size_t>(samplesPerBlock), 0.0f);
 
     resetDelayBuffer();
     setReverbFromParams();
@@ -242,12 +244,10 @@ void ReMasteredAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuff
     for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(midiMessage, time);)
         handleMidiMessage(midiMessage);
 
-    std::vector<float> dryInput(static_cast<size_t>(numSamples), 0.0f);
     if (numInputChannels > 0)
-    {
-        const float* input = buffer.getReadPointer(0);
-        std::copy(input, input + numSamples, dryInput.begin());
-    }
+        std::copy(buffer.getReadPointer(0), buffer.getReadPointer(0) + numSamples, dryInputBuf.begin());
+    else
+        std::fill(dryInputBuf.begin(), dryInputBuf.begin() + numSamples, 0.0f);
 
     updatePitchDetection(buffer);
 
@@ -259,8 +259,8 @@ void ReMasteredAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuff
     applyPitchGlideAndTune(numSamples);
 
     buffer.clear();
-    processHarmonyVoices(dryInput, numSamples, buffer);
-    applyPostFx(buffer, dryInput);
+    processHarmonyVoices(dryInputBuf, numSamples, buffer);
+    applyPostFx(buffer, dryInputBuf);
 
     if (auto* uiVisualiser = visualiser.load())
         uiVisualiser->pushBuffer(buffer);
@@ -713,8 +713,6 @@ void ReMasteredAudioProcessor::applyPostFx(AudioBuffer<float>& outputBuffer, con
                                           juce::jmax(1, static_cast<int>(delayBuffer.size() - 1)),
                                           static_cast<int>((juce::jlimit(40.0f, 900.0f, getDelayTimeMs()) / 1000.0f) * static_cast<float>(sampleRate)));
 
-    std::vector<float> wetBuffer(static_cast<size_t>(numSamples), 0.0f);
-
     for (int i = 0; i < numSamples; ++i)
     {
         const float harmonyIn = outputBuffer.getSample(0, i);
@@ -736,16 +734,17 @@ void ReMasteredAudioProcessor::applyPostFx(AudioBuffer<float>& outputBuffer, con
         wetHighPassPrevOutput = hpOut;
         wet = hpOut;
 
-        wetBuffer[static_cast<size_t>(i)] = wet;
+        wetBuf[static_cast<size_t>(i)] = wet;
     }
 
-    setReverbFromParams();
-    reverb.processMono(wetBuffer.data(), numSamples);
+    if (reverbDirty.exchange(false))
+        setReverbFromParams();
+    reverb.processMono(wetBuf.data(), numSamples);
 
     for (int i = 0; i < numSamples; ++i)
     {
-        const float wet = wetBuffer[static_cast<size_t>(i)];
-        const float dryIn = (i < static_cast<int>(dryInput.size())) ? dryInput[static_cast<size_t>(i)] : 0.0f;
+        const float wet = wetBuf[static_cast<size_t>(i)];
+        const float dryIn = dryInput[static_cast<size_t>(i)];
         const float mixed = ((dryIn * dry) + (wet * (1.0f - dry))) * gain;
         const float out = juce::jlimit(-1.0f, 1.0f, mixed);
 
@@ -948,9 +947,9 @@ void ReMasteredAudioProcessor::setDelayTimeMs(float ms) { delayTimeMs.store(juce
 float ReMasteredAudioProcessor::getDelayTimeMs() const { return juce::jlimit(40.0f, 900.0f, delayTimeMs.load()); }
 void ReMasteredAudioProcessor::setDelayFeedback(float feedback) { delayFeedback.store(juce::jlimit(0.0f, 0.93f, feedback)); }
 float ReMasteredAudioProcessor::getDelayFeedback() const { return juce::jlimit(0.0f, 0.93f, delayFeedback.load()); }
-void ReMasteredAudioProcessor::setReverbMix(float mix) { reverbMix.store(juce::jlimit(0.0f, 1.0f, mix)); }
+void ReMasteredAudioProcessor::setReverbMix(float mix) { reverbMix.store(juce::jlimit(0.0f, 1.0f, mix)); reverbDirty.store(true); }
 float ReMasteredAudioProcessor::getReverbMix() const { return juce::jlimit(0.0f, 1.0f, reverbMix.load()); }
-void ReMasteredAudioProcessor::setClarity(float amount) { clarity.store(juce::jlimit(0.0f, 1.0f, amount)); }
+void ReMasteredAudioProcessor::setClarity(float amount) { clarity.store(juce::jlimit(0.0f, 1.0f, amount)); reverbDirty.store(true); }
 float ReMasteredAudioProcessor::getClarity() const { return juce::jlimit(0.0f, 1.0f, clarity.load()); }
 
 //==============================================================================

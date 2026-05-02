@@ -175,7 +175,10 @@ private:
     std::atomic<float> delayFeedback { 0.28f };
     std::atomic<float> reverbMix { 0.24f };
     std::atomic<float> clarity { 0.58f };
+    std::atomic<bool> reverbDirty { true };
 
+    std::vector<float> dryInputBuf;
+    std::vector<float> wetBuf;
     std::vector<float> delayBuffer;
     int delayWriteIndex = 0;
     juce::Reverb reverb;
