@@ -5,9 +5,40 @@ This plugin uses the aubio library for pitch detection and SoundTouch library fo
 
 ---
 
-## Setup & Build Guide (macOS)
+## Download (macOS)
+
+**[→ Download the latest release](https://github.com/gbyesiltas/ReMastered/releases/latest)**
+
+Works on Apple Silicon (M1/M2/M3/M4) and Intel Macs.
+
+### Install the plugins (VST3 / AU)
+
+1. Unzip the downloaded file.
+2. Copy the files to their plugin folders:
+
+| File | Destination |
+|---|---|
+| `ReMastered.vst3` | `~/Library/Audio/Plug-Ins/VST3/` |
+| `ReMastered.component` | `~/Library/Audio/Plug-Ins/Components/` |
+
+3. Restart your DAW and rescan plugins. Find **ReMastered** under GBY.
+
+### Run without a DAW (Standalone)
+
+Double-click `ReMastered.app` — no installation needed. It reads audio from any input device and MIDI from any connected controller.
+
+### macOS Gatekeeper warning
+
+On first launch macOS may say _"unidentified developer"_. To allow it:
+**System Settings → Privacy & Security → Open Anyway**
+
+---
+
+## Build from Source (macOS)
 
 This guide takes you from a fresh Mac to a working AU/VST3 plugin in Ableton (or any AU/VST3 host), and a Standalone app for quick testing without a DAW.
+
+> If you just want to use the plugin, use the [Download](#download-macos) section above instead.
 
 ### 1. Install Xcode Command Line Tools
 
